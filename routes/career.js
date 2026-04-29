@@ -238,30 +238,45 @@ const seedCareers = [
 // ─── AI Helper ───────────────────────────────────────────────────────────────
 async function callAI(prompt) {
   const apiKey = process.env.OPENROUTER_API_KEY;
-  if (!apiKey) throw new Error('OPENROUTER_API_KEY not configured');
+  if (!apiKey || apiKey === 'PASTE_YOUR_KEY_HERE') {
+    throw new Error('OPENROUTER_API_KEY not configured on server');
+  }
 
-  const response = await axios.post("https://openrouter.ai/api/v1/chat/completions", {
-    model: "openai/gpt-4.1-mini",
-    messages: [
-      {
-        role: "system",
-        content: "You are a career guidance AI. Always respond with valid JSON only. No markdown, no code blocks, no extra text — pure JSON."
+  try {
+    const response = await axios.post("https://openrouter.ai/api/v1/chat/completions", {
+      model: "google/gemini-2.0-flash-001", // Better, faster, and reliable model
+      messages: [
+        {
+          role: "system",
+          content: "You are a career guidance AI. Always respond with valid JSON only. No markdown, no code blocks, no extra text — pure JSON."
+        },
+        { role: "user", content: prompt }
+      ],
+      temperature: 0.3 // Lower temperature for more consistent JSON
+    }, {
+      headers: {
+        "Authorization": `Bearer ${apiKey}`,
+        "Content-Type": "application/json",
+        "HTTP-Referer": "http://localhost:3000",
+        "X-Title": "InternPath Career Guidance"
       },
-      { role: "user", content: prompt }
-    ],
-    temperature: 0.7
-  }, {
-    headers: {
-      "Authorization": `Bearer ${apiKey}`,
-      "Content-Type": "application/json",
-      "HTTP-Referer": "http://localhost:3000",
-      "X-Title": "InternPath Career Guidance"
-    }
-  });
+      timeout: 30000 // 30s timeout
+    });
 
-  let content = response.data.choices[0].message.content;
-  content = content.replace(/```json/g, "").replace(/```/g, "").trim();
-  return JSON.parse(content);
+    let content = response.data.choices[0].message.content;
+    // Clean up markdown if the AI ignored instructions
+    content = content.replace(/```json/g, "").replace(/```/g, "").trim();
+    
+    try {
+      return JSON.parse(content);
+    } catch (e) {
+      console.error("Failed to parse AI JSON. Content:", content);
+      throw new Error("AI returned an invalid format. Please try again.");
+    }
+  } catch (err) {
+    console.error("AI API Error:", err.response?.data || err.message);
+    throw new Error(err.response?.data?.error?.message || "AI service is currently unavailable.");
+  }
 }
 
 // ─── Routes ──────────────────────────────────────────────────────────────────

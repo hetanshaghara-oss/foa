@@ -114,9 +114,18 @@ export default function Roadmap() {
 
       {/* Loading state */}
       {loading && (
-        <div style={{ textAlign: 'center', padding: '60px 0' }}>
-          <div style={{ fontSize: '3rem', marginBottom: 16, animation: 'spin 2s linear infinite', display: 'inline-block' }}>🧠</div>
-          <p style={{ color: '#9ca3af' }}>AI is crafting your personalized roadmap...</p>
+        <div style={{ textAlign: 'center', padding: '80px 0', background: 'rgba(17,24,39,0.4)', borderRadius: 24, border: '1px solid rgba(99,102,241,0.2)' }}>
+          <div style={{ position: 'relative', width: 80, height: 80, margin: '0 auto 24px' }}>
+            <div style={{ position: 'absolute', inset: 0, border: '4px solid rgba(99,102,241,0.1)', borderRadius: '50%' }} />
+            <div style={{ position: 'absolute', inset: 0, border: '4px solid transparent', borderTopColor: '#6366f1', borderRadius: '50%', animation: 'spin 1s linear infinite' }} />
+            <div style={{ position: 'absolute', inset: 0, display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: '2rem' }}>🧠</div>
+          </div>
+          <h3 style={{ fontSize: '1.25rem', fontWeight: 700, marginBottom: 8, background: 'linear-gradient(135deg, #6366f1, #a855f7)', WebkitBackgroundClip: 'text', WebkitTextFillColor: 'transparent' }}>
+            AI is analyzing the path...
+          </h3>
+          <p style={{ color: '#9ca3af', maxWidth: 400, margin: '0 auto' }}>
+            Crafting a personalized phase-by-phase roadmap for <strong style={{ color: '#818cf8' }}>{career}</strong>. This usually takes 5-10 seconds.
+          </p>
         </div>
       )}
 

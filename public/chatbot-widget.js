@@ -11,11 +11,11 @@
 (function () {
   // ---- CONFIG — change this to your server URL ----
   const CHATBOT_SERVER_URL = "/api/chat";
-  const MODEL = "qwen/qwen3-8b:free";
+  const MODEL = "google/gemini-2.0-flash-001";
   const MAX_TOKENS = 1024;
   const SYSTEM_PROMPT =
-    "You are a helpful and friendly AI assistant. Reply in plain text only.";
-  const WIDGET_TITLE = "AI Assistant";
+    "You are a helpful and friendly AI assistant for InternPath, a career and internship platform. Help students with career advice, internship applications, and skill development. Reply in plain text only.";
+  const WIDGET_TITLE = "InternPath AI";
   const ACCENT_COLOR = "#10b981";
   // -------------------------------------------------------
 

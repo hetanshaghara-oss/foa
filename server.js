@@ -791,7 +791,7 @@ Requirements:
 
     const axios = require("axios");
     const response = await axios.post("https://openrouter.ai/api/v1/chat/completions", {
-      model: "qwen/qwen-2.5-72b-instruct",
+      model: "google/gemini-2.0-flash-001",
       messages: [{ role: "user", content: prompt }]
     }, {
       headers: { "Authorization": `Bearer ${apiKey}`, "Content-Type": "application/json" }
@@ -964,7 +964,7 @@ IMPORTANT: You MUST return ONLY valid JSON in the exact following structure with
             Authorization: "Bearer " + apiKey,
           },
           body: JSON.stringify({
-            model: "qwen/qwen-2.5-72b-instruct", // Powerful open model for structural extraction
+            model: "google/gemini-2.0-flash-001", // Powerful model for structural extraction
             messages: [
               { role: "system", content: systemPrompt },
               {
@@ -1785,9 +1785,8 @@ app.post("/api/chat", async (req, res) => {
 
   const apiKey = process.env.OPENROUTER_API_KEY;
   if (!apiKey || apiKey === "PASTE_YOUR_KEY_HERE") {
-    return res.status(500).json({
-      error:
-        "API key not set. Add OPENROUTER_API_KEY to your .env file (OpenRouter).",
+    return res.status(503).json({
+      error: "AI service not configured on server (.env missing key)."
     });
   }
 
@@ -1802,44 +1801,35 @@ app.post("/api/chat", async (req, res) => {
       ...messages,
     ];
 
-    const response = await fetch(
+    const response = await axios.post(
       "https://openrouter.ai/api/v1/chat/completions",
       {
-        method: "POST",
-        headers: {
-          "Content-Type": "application/json",
-          Authorization: "Bearer " + apiKey,
-        },
-        body: JSON.stringify({
-          model: model || "qwen/qwen-2.5-72b-instruct",
-          max_tokens: max_tokens || 1024,
-          temperature: 0.7,
-          messages: fullMessages,
-        }),
+        model: model || "google/gemini-2.0-flash-001",
+        max_tokens: max_tokens || 1024,
+        temperature: 0.7,
+        messages: fullMessages,
       },
+      {
+        headers: {
+          "Authorization": `Bearer ${apiKey}`,
+          "Content-Type": "application/json",
+          "HTTP-Referer": "http://localhost:3000",
+          "X-Title": "InternPath AI Assistant"
+        },
+        timeout: 30000
+      }
     );
 
-    const data = await response.json();
-
-    if (!response.ok || data.error) {
-      const code = response.status;
-      const msg = data.error?.message || JSON.stringify(data);
-      return res
-        .status(code >= 400 ? code : 500)
-        .json({ error: "OpenRouter Error " + code + ": " + msg });
-    }
-
-    const reply = data.choices?.[0]?.message?.content;
+    const reply = response.data.choices?.[0]?.message?.content;
     if (!reply) {
-      return res
-        .status(500)
-        .json({ error: "Empty response from model. Try again." });
+      return res.status(500).json({ error: "Empty response from AI service." });
     }
 
     res.json({ reply: reply.trim() });
   } catch (err) {
-    console.error("Chat API error:", err.message);
-    res.status(500).json({ error: "Server error: " + err.message });
+    console.error("Chat API error:", err.response?.data || err.message);
+    const msg = err.response?.data?.error?.message || err.message;
+    res.status(500).json({ error: "AI Error: " + msg });
   }
 });
 
@@ -1939,45 +1929,6 @@ const io = new Server(httpServer, {
 const roomUsers = {}; // { roomId: Set<socketId> }
 
 
-// --- AI Chatbot (OpenRouter Proxy) ---
-app.post("/api/chat", async (req, res) => {
-  const { messages, model, max_tokens, system_prompt } = req.body;
-  const apiKey = process.env.OPENROUTER_API_KEY;
-
-  if (!apiKey || apiKey.includes("your-key")) {
-    return res.status(503).json({
-      error: "AI service not configured on server (.env missing key)."
-    });
-  }
-
-  try {
-    const axios = require("axios");
-    const response = await axios.post(
-      "https://openrouter.ai/api/v1/chat/completions",
-      {
-        model: model || "qwen/qwen-72b-chat:free",
-        messages: [
-          { role: "system", content: system_prompt || "You are a helpful assistant." },
-          ...messages
-        ],
-        max_tokens: max_tokens || 1000,
-      },
-      {
-        headers: {
-          "Authorization": `Bearer ${apiKey}`,
-          "Content-Type": "application/json",
-          "HTTP-Referer": "http://localhost:3000", // Required by OpenRouter
-        },
-      }
-    );
-
-    const reply = response.data.choices[0].message.content;
-    res.json({ reply });
-  } catch (err) {
-    console.error("Chatbot Error:", err.response?.data || err.message);
-    res.status(500).json({ error: "Failed to connect to AI service." });
-  }
-});
 
 // --- Socket.IO Real-time Logic ---
 io.on("connection", (socket) => {

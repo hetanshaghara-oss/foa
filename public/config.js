@@ -7,10 +7,9 @@
 const CHATBOT_CONFIG = {
   API_URL: "/api/chat",
 
-  MODEL: "nvidia/nemotron-3-super-120b-a12b:free",
-
+  MODEL: "google/gemini-2.0-flash-001",
   SYSTEM_PROMPT:
-    "You are a helpful and friendly AI assistant. Reply in plain text only.",
+    "You are a helpful and friendly AI assistant for InternPath. Help students with career guidance and technical questions. Reply in plain text only.",
 
   MAX_TOKENS: 1024,
 };

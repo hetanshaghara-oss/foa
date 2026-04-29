@@ -88,7 +88,14 @@ export default function Home() {
             className="btn-primary"
             style={{ marginTop: 16, width: '100%', justifyContent: 'center', fontSize: '1rem', padding: '14px' }}
           >
-            {loading ? '🧠 Analyzing your profile...' : '🚀 Discover My Career Paths'}
+            {loading ? (
+              <span style={{ display: 'flex', alignItems: 'center', gap: 10 }}>
+                <span className="spinner-small" style={{ width: 18, height: 18, border: '2px solid rgba(255,255,255,0.3)', borderTopColor: '#fff', borderRadius: '50%', animation: 'spin 0.8s linear infinite' }} />
+                Analyzing your profile...
+              </span>
+            ) : (
+              '🚀 Discover My Career Paths'
+            )}
           </button>
         </div>
       </div>
