@@ -1,7 +1,6 @@
 import { useState, useEffect } from 'react';
 import { useParams, Link, useNavigate } from 'react-router-dom';
 import axios from 'axios';
-
 const S = {
   sectionCard: {
     background: 'rgba(17,24,39,0.6)', backdropFilter: 'blur(24px)',

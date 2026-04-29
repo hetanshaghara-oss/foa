@@ -4748,6 +4748,37 @@
       document.body.style.overflow = '';
     }
 
+    function prepareCall(appId, name, role) {
+      currentInterviewAppId = appId;
+      currentInterviewName = name || "Candidate";
+      
+      const nameToUse = currentInterviewName;
+      const roleToUse = role || "Product Engineering Intern";
+
+      const nameEl = document.getElementById("call-candidate-name");
+      if (nameEl) nameEl.textContent = nameToUse;
+      
+      const roleEl = document.getElementById("call-candidate-role");
+      if (roleEl) roleEl.textContent = roleToUse;
+
+      const preCallNameEl = document.getElementById("pre-call-candidate-name");
+      if (preCallNameEl) preCallNameEl.textContent = nameToUse;
+
+      const preCallCardNameEl = document.getElementById("pre-call-card-name");
+      if (preCallCardNameEl) preCallCardNameEl.textContent = nameToUse;
+
+      const candInitials = document.querySelector("#pre-call-screen .cand-avatar");
+      if (candInitials) candInitials.textContent = nameToUse[0] ? nameToUse[0].toUpperCase() : "C";
+
+      const videoAvatarName = document.getElementById("video-candidate-name");
+      if (videoAvatarName) videoAvatarName.textContent = `${nameToUse} · Candidate`;
+
+      switchITab('call');
+    }
+    
+    // Alias for compatibility
+    window.prepInterview = prepareCall;
+
     function renderSessionSection() {
       const el = document.getElementById("session-list");
       if (!el) return;
@@ -5228,6 +5259,9 @@
       const createPipeCard = (stu, source, statusCls) => {
         const skillsHtml = (stu.skills || []).slice(0, 2).map(s => `<span class="pc-skill-tag">${s}</span>`).join("");
         const isVerified = stu.isVerified || (stu.skills || []).some(s => s.verified);
+        
+        // Show interview button for specific stages
+        const showInterviewBtn = ["approved", "screening", "interviewed"].includes(statusCls) || ["approved", "interviewed"].includes(stu.status);
 
         return `
             <div class="pipeline-card ${statusCls} reveal visible" 
@@ -5261,11 +5295,20 @@
                 ${stu.skills && stu.skills.length > 2 ? `<span class="pc-skill-tag" style="background:#fff; border-style:dashed;">+${stu.skills.length - 2}</span>` : ''}
               </div>
 
-              <div class="pc-footer">
-                <div class="cand-avatar" style="background: ${stu.color}; width: 24px; height: 24px; font-size: 0.7rem; border-radius: 8px; color:white; display:flex; align-items:center; justify-content:center; font-weight:700;">
-                  ${stu.initials}
+              <div class="pc-footer" style="flex-direction: column; align-items: stretch; gap: 8px;">
+                <div style="display: flex; align-items: center; gap: 8px;">
+                  <div class="cand-avatar" style="background: ${stu.color}; width: 24px; height: 24px; font-size: 0.7rem; border-radius: 8px; color:white; display:flex; align-items:center; justify-content:center; font-weight:700;">
+                    ${stu.initials}
+                  </div>
+                  <div class="pc-college">${stu.college}</div>
                 </div>
-                <div class="pc-college">${stu.college}</div>
+                ${showInterviewBtn ? `
+                  <button class="btn btn-primary btn-sm" 
+                          style="font-size:0.7rem; padding:6px 10px; width:100%; gap:4px; margin-top:4px;" 
+                          onclick="event.stopPropagation(); prepareCall('${stu.appId}', '${stu.name.replace(/'/g, "\\'")}', '${stu.role.replace(/'/g, "\\'")}')">
+                    📹 Interview Now
+                  </button>
+                ` : ''}
               </div>
             </div>
           `;
@@ -5633,12 +5676,25 @@
         const buildCard = (a) => {
           const name = a.student ? (a.student.firstName + " " + a.student.lastName).trim() || a.student.username : "Student";
           const role = a.internship ? a.internship.title : a.roleTitle;
-          const matchStatus = "M";
-          return '<div class="pipeline-card" onclick="prepareCall(\'' + a._id + '\', \'' + name.replace(/'/g, "\\'") + '\', \'' + role.replace(/'/g, "\\'") + '\')">' +
-            '<div class="pc-name">' + name + '</div>' +
-            '<div class="pc-role">' + role + '</div>' +
-            '<span class="badge badge-info" style="font-size: 0.65rem; padding: 3px 8px">' + a.status + '</span>' +
-            '</div>';
+          
+          // Only show interview button for Approved or Interviewed stages
+          const showInterviewBtn = ["approved", "interviewed"].includes(a.status);
+          
+          return `
+            <div class="pipeline-card" onclick="viewStudentProfile('${a.student?._id || a.student?.id}', 'CANDIDATES')">
+              <div class="pc-name">${name}</div>
+              <div class="pc-role">${role}</div>
+              <div style="display:flex; justify-content:space-between; align-items:center; margin-top:10px;">
+                <span class="badge badge-info" style="font-size: 0.6rem; padding: 2px 6px; background: rgba(99, 102, 241, 0.1); color: var(--primary-light);">${a.status}</span>
+              </div>
+              ${showInterviewBtn ? `
+                <button class="btn btn-primary btn-sm" 
+                        style="font-size:0.7rem; padding:6px 10px; margin-top:10px; width:100%; gap:4px;" 
+                        onclick="event.stopPropagation(); prepareCall('${a._id}', '${name.replace(/'/g, "\\'")}', '${role.replace(/'/g, "\\'")}')">
+                  📹 Interview Now
+                </button>
+              ` : ''}
+            </div>`;
         };
 
         const updateCol = (idx, title, count, items) => {
