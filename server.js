@@ -1972,6 +1972,22 @@ io.on("connection", (socket) => {
     });
   });
 
+  // PHASE 2: COLLABORATIVE CODING SYNC
+  socket.on("code-sync", (data) => {
+    // data = { roomId, code }
+    socket.to(data.roomId).emit("code-sync", { from: socket.id, code: data.code });
+  });
+
+  socket.on("sandbox-toggle", (data) => {
+    // data = { roomId, active }
+    socket.to(data.roomId).emit("sandbox-toggle", { from: socket.id, active: data.active });
+  });
+
+  socket.on("terminal-sync", (data) => {
+    // data = { roomId, output }
+    socket.to(data.roomId).emit("terminal-sync", { from: socket.id, output: data.output });
+  });
+
   // Cleanup on disconnect
   socket.on("disconnect", () => {
     console.log("❌ Socket disconnected:", socket.id);

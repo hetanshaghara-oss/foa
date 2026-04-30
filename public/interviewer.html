@@ -1966,6 +1966,455 @@
       }
     }
 
+    /* ======== AI CO-PILOT SIDEBAR ======== */
+    .copilot-container {
+      display: grid;
+      grid-template-columns: 1fr 340px;
+      gap: 24px;
+      height: calc(100vh - 180px);
+      transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+      align-items: start;
+    }
+
+    .interview-main {
+      height: 100%;
+      overflow-y: auto;
+      padding-right: 8px;
+      display: flex;
+      flex-direction: column;
+      gap: 16px;
+    }
+
+    /* Custom Scrollbar for Interview Main */
+    .interview-main::-webkit-scrollbar {
+      width: 6px;
+    }
+
+    .interview-main::-webkit-scrollbar-thumb {
+      background: rgba(255, 255, 255, 0.1);
+      border-radius: 10px;
+    }
+
+    .copilot-sidebar {
+      background: rgba(15, 23, 42, 0.6);
+      backdrop-filter: blur(20px);
+      border: 1px solid rgba(255, 255, 255, 0.08);
+      border-radius: var(--radius-lg);
+      display: flex;
+      flex-direction: column;
+      height: 100%;
+      overflow: hidden;
+      box-shadow: 0 20px 50px rgba(0, 0, 0, 0.3);
+      animation: slideInRight 0.5s cubic-bezier(0.4, 0, 0.2, 1);
+    }
+
+    .copilot-header {
+      padding: 18px;
+      background: linear-gradient(135deg, rgba(99, 102, 241, 0.2), rgba(168, 85, 247, 0.2));
+      border-bottom: 1px solid rgba(255, 255, 255, 0.05);
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      color: #fff;
+    }
+
+    .copilot-header h3 {
+      font-size: 0.95rem;
+      font-weight: 700;
+      letter-spacing: 0.02em;
+    }
+
+    .copilot-body {
+      flex: 1;
+      overflow-y: auto;
+      padding: 20px;
+      display: flex;
+      flex-direction: column;
+      gap: 24px;
+    }
+
+    .copilot-section-title {
+      font-size: 0.7rem;
+      font-weight: 800;
+      text-transform: uppercase;
+      letter-spacing: 0.12em;
+      color: var(--text-muted);
+      margin-bottom: 14px;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+    }
+
+    .smart-question-card {
+      background: rgba(255, 255, 255, 0.03);
+      border: 1px solid rgba(255, 255, 255, 0.06);
+      border-radius: 12px;
+      padding: 14px;
+      margin-bottom: 12px;
+      transition: all 0.3s ease;
+      cursor: pointer;
+      position: relative;
+      overflow: hidden;
+    }
+
+    .smart-question-card::before {
+      content: "";
+      position: absolute;
+      left: 0;
+      top: 0;
+      height: 100%;
+      width: 3px;
+      background: var(--primary);
+      opacity: 0;
+      transition: 0.3s;
+    }
+
+    .smart-question-card:hover {
+      background: rgba(99, 102, 241, 0.08);
+      border-color: rgba(99, 102, 241, 0.3);
+      transform: translateX(5px);
+    }
+
+    .smart-question-card:hover::before {
+      opacity: 1;
+    }
+
+    .smart-question-card p {
+      font-size: 0.82rem;
+      color: #e2e8f0;
+      line-height: 1.5;
+    }
+
+    .skill-check-item {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      padding: 10px 0;
+      border-bottom: 1px solid rgba(255, 255, 255, 0.03);
+    }
+
+    .skill-check-item:last-child {
+      border-bottom: none;
+    }
+
+    .sentiment-meter-container {
+      background: rgba(255, 255, 255, 0.03);
+      padding: 14px;
+      border-radius: 12px;
+      border: 1px solid rgba(255, 255, 255, 0.05);
+    }
+
+    .sentiment-meter {
+      height: 8px;
+      background: rgba(0, 0, 0, 0.3);
+      border-radius: 10px;
+      overflow: hidden;
+      margin-top: 10px;
+    }
+
+    .live-transcript {
+      background: rgba(0, 0, 0, 0.4);
+      border: 1px solid rgba(255, 255, 255, 0.05);
+      border-radius: 12px;
+      padding: 14px;
+      font-family: 'Inter', sans-serif;
+      font-size: 0.78rem;
+      height: 150px;
+      overflow-y: auto;
+      color: #94a3b8;
+      line-height: 1.6;
+    }
+
+    .transcript-line {
+      margin-bottom: 10px;
+      padding-bottom: 8px;
+      border-bottom: 1px solid rgba(255, 255, 255, 0.03);
+      animation: fadeIn 0.4s ease;
+    }
+
+    .transcript-line:last-child {
+      border-bottom: none;
+    }
+
+    .transcript-line .speaker {
+      font-weight: 800;
+      font-size: 0.7rem;
+      text-transform: uppercase;
+      letter-spacing: 0.05em;
+      margin-right: 6px;
+    }
+
+    .speaker-candidate { color: #38bdf8; }
+    .speaker-interviewer { color: #818cf8; }
+    .speaker-ai { color: #f472b6; }
+
+    /* Fix for floating elements overlapping sidebar */
+    #cw-bubble {
+      left: 24px !important;
+      right: auto !important;
+    }
+    #cw-window {
+      left: 24px !important;
+      right: auto !important;
+    }
+    .floating-chat-widget, #drift-widget, .drift-frame-controller {
+      z-index: 100 !important;
+    }
+
+    .copilot-sidebar {
+      z-index: 1000;
+    }
+
+    /* ======== PHASE 2: CODING SANDBOX ======== */
+    .sandbox-container {
+      display: none;
+      flex-direction: column;
+      background: #0d1117;
+      border-radius: var(--radius-lg);
+      border: 1px solid rgba(255, 255, 255, 0.1);
+      height: 550px;
+      overflow: hidden;
+      margin-bottom: 20px;
+      box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.5);
+    }
+
+    .sandbox-container.active {
+      display: flex;
+    }
+
+    .sandbox-header {
+      background: #161b22;
+      padding: 10px 16px;
+      border-bottom: 1px solid rgba(255, 255, 255, 0.08);
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+    }
+
+    .sandbox-controls {
+      display: flex;
+      gap: 10px;
+      align-items: center;
+    }
+
+    .lang-select {
+      background: rgba(255, 255, 255, 0.05);
+      border: 1px solid rgba(255, 255, 255, 0.1);
+      color: #fff;
+      padding: 4px 10px;
+      border-radius: 6px;
+      font-size: 0.75rem;
+      outline: none;
+    }
+
+    .sandbox-editor-wrapper {
+      flex: 1;
+      display: flex;
+      position: relative;
+    }
+
+    .editor-line-numbers {
+      width: 40px;
+      background: #0d1117;
+      border-right: 1px solid rgba(255, 255, 255, 0.05);
+      padding: 12px 0;
+      color: #484f58;
+      font-family: 'DM Mono', monospace;
+      font-size: 12px;
+      text-align: center;
+      user-select: none;
+    }
+
+    .code-editor {
+      flex: 1;
+      background: transparent;
+      border: none;
+      color: #e6edf3;
+      font-family: 'DM Mono', 'Fira Code', monospace;
+      font-size: 13.5px;
+      padding: 12px;
+      resize: none;
+      outline: none;
+      line-height: 1.6;
+      white-space: pre;
+      overflow-wrap: normal;
+      overflow-x: auto;
+    }
+
+    .sandbox-terminal {
+      height: 120px;
+      background: #010409;
+      border-top: 1px solid rgba(255, 255, 255, 0.1);
+      padding: 12px;
+      font-family: 'DM Mono', monospace;
+      font-size: 12px;
+      color: #7ee787;
+      overflow-y: auto;
+    }
+
+    .terminal-header {
+      font-size: 0.65rem;
+      text-transform: uppercase;
+      color: #8b949e;
+      margin-bottom: 6px;
+      display: flex;
+      justify-content: space-between;
+    }
+
+    .run-btn {
+      background: #238636;
+      color: #fff;
+      border: none;
+      padding: 5px 14px;
+      border-radius: 6px;
+      font-size: 0.75rem;
+      font-weight: 600;
+      cursor: pointer;
+      display: flex;
+      align-items: center;
+      gap: 6px;
+      transition: background 0.2s;
+    }
+
+    .run-btn:hover {
+      background: #2ea043;
+    }
+
+    .sandbox-mode-badge {
+      padding: 3px 8px;
+      border-radius: 4px;
+      font-size: 0.65rem;
+      font-weight: 700;
+      background: rgba(99, 102, 241, 0.15);
+      color: #818cf8;
+      border: 1px solid rgba(99, 102, 241, 0.3);
+    }
+
+    /* ======== PHASE 2: CODING SANDBOX ======== */
+    .sandbox-container {
+      display: none;
+      flex-direction: column;
+      background: #0d1117;
+      border-radius: var(--radius-lg);
+      border: 1px solid rgba(255, 255, 255, 0.1);
+      height: 600px;
+      overflow: hidden;
+      margin-bottom: 24px;
+      box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.5);
+    }
+
+    .sandbox-container.active {
+      display: flex;
+    }
+
+    .sandbox-header {
+      background: #161b22;
+      padding: 12px 20px;
+      border-bottom: 1px solid rgba(255, 255, 255, 0.08);
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+    }
+
+    .sandbox-controls {
+      display: flex;
+      gap: 12px;
+      align-items: center;
+    }
+
+    .lang-select {
+      background: rgba(255, 255, 255, 0.05);
+      border: 1px solid rgba(255, 255, 255, 0.1);
+      color: #fff;
+      padding: 6px 12px;
+      border-radius: 6px;
+      font-size: 0.8rem;
+      outline: none;
+    }
+
+    .sandbox-editor-wrapper {
+      flex: 1;
+      display: flex;
+      position: relative;
+    }
+
+    .editor-line-numbers {
+      width: 45px;
+      background: #0d1117;
+      border-right: 1px solid rgba(255, 255, 255, 0.05);
+      padding: 15px 0;
+      color: #484f58;
+      font-family: 'DM Mono', monospace;
+      font-size: 13px;
+      text-align: center;
+      user-select: none;
+    }
+
+    .code-editor {
+      flex: 1;
+      background: transparent;
+      border: none;
+      color: #e6edf3;
+      font-family: 'DM Mono', 'Fira Code', monospace;
+      font-size: 14px;
+      padding: 15px;
+      resize: none;
+      outline: none;
+      line-height: 1.6;
+      white-space: pre;
+      overflow-wrap: normal;
+      overflow-x: auto;
+    }
+
+    .sandbox-terminal {
+      height: 140px;
+      background: #010409;
+      border-top: 1px solid rgba(255, 255, 255, 0.1);
+      padding: 15px;
+      font-family: 'DM Mono', monospace;
+      font-size: 13px;
+      color: #7ee787;
+      overflow-y: auto;
+    }
+
+    .terminal-header {
+      font-size: 0.7rem;
+      text-transform: uppercase;
+      color: #8b949e;
+      margin-bottom: 8px;
+      display: flex;
+      justify-content: space-between;
+    }
+
+    .run-btn {
+      background: #238636;
+      color: #fff;
+      border: none;
+      padding: 6px 16px;
+      border-radius: 6px;
+      font-size: 0.8rem;
+      font-weight: 600;
+      cursor: pointer;
+      display: flex;
+      align-items: center;
+      gap: 6px;
+      transition: background 0.2s;
+    }
+
+    .run-btn:hover {
+      background: #2ea043;
+    }
+
+    .mode-badge {
+      padding: 4px 10px;
+      border-radius: 4px;
+      font-size: 0.7rem;
+      font-weight: 700;
+      background: rgba(99, 102, 241, 0.15);
+      color: #818cf8;
+      border: 1px solid rgba(99, 102, 241, 0.3);
+    }
+
     /* ---- Post Listing ---- */
     .form-section-title {
       font-size: 0.875rem;
@@ -3589,166 +4038,275 @@
                     color: var(--text-primary);
                     letter-spacing: 0.1em;
                   ">00:00</span>
-              <button class="btn btn-outline btn-sm" onclick="openNotes()">
-                📝 Notes
+              <button class="btn btn-outline btn-sm" onclick="toggleCopilot()" id="copilot-toggle-btn">
+                ✨ AI Co-pilot
+              </button>
+              <button class="btn btn-outline btn-sm" onclick="toggleSandbox()" id="sandbox-toggle-btn">
+                💻 Coding Sandbox
               </button>
             </div>
           </div>
 
-          <!-- Camera permission denied banner -->
-          <div id="cam-denied-banner" style="
-                display: none;
-                background: rgba(239, 68, 68, 0.12);
-                border: 1px solid rgba(239, 68, 68, 0.3);
-                border-radius: var(--radius-md);
-                padding: 12px 16px;
-                margin-bottom: 14px;
-                font-size: 0.875rem;
-                color: #fca5a5;
-              ">
-            ⚠️ <strong>Camera/Mic access denied.</strong> Please allow camera
-            & microphone permissions in your browser address bar and refresh
-            the page to show your video.
-          </div>
-
-          <!-- Video Grid — real camera on right tile -->
-          <div class="video-grid mb-16">
-            <!-- Candidate tile (simulated) -->
-            <div class="video-tile active-speaker" id="candidate-tile">
-              <div class="video-avatar">A</div>
-              <div class="video-name" id="video-candidate-name">Candidate · Candidate</div>
-              <div style="
-                    position: absolute;
-                    top: 10px;
-                    left: 12px;
-                    padding: 3px 8px;
-                    background: rgba(16, 185, 129, 0.7);
-                    border-radius: var(--radius-full);
-                    font-size: 0.7rem;
-                    backdrop-filter: blur(6px);
-                  ">
-                ● Speaking
-              </div>
-            </div>
-            <!-- Self tile: real camera feed -->
-            <div class="video-tile" id="self-tile" style="position: relative; overflow: hidden">
-              <!-- Fallback avatar — shown when camera is off or denied -->
-              <div id="self-avatar-fallback" style="
-                    position: absolute;
-                    inset: 0;
-                    z-index: 2;
-                    background: linear-gradient(135deg, #f59e0b, #ef4444);
-                    display: flex;
-                    align-items: center;
-                    justify-content: center;
-                    font-size: 2.2rem;
-                    font-weight: 700;
-                    color: #fff;
-                    border-radius: inherit;
-                  ">
-                R
-              </div>
-              <!-- Real camera video element — hidden until getUserMedia succeeds -->
-              <video id="self-video" autoplay muted playsinline style="
-                    position: absolute;
-                    inset: 0;
-                    width: 100%;
-                    height: 100%;
-                    object-fit: cover;
-                    border-radius: inherit;
-                    transform: scaleX(-1);
+          <div class="copilot-container" id="interview-layout">
+            <div class="interview-main">
+              <!-- Camera permission denied banner -->
+              <div id="cam-denied-banner" style="
                     display: none;
-                    z-index: 3;
-                    background: #e2e8f0;
-                  "></video>
-              <div class="video-name" style="
-                    position: absolute;
-                    bottom: 12px;
-                    left: 12px;
-                    z-index: 5;
+                    background: rgba(239, 68, 68, 0.12);
+                    border: 1px solid rgba(239, 68, 68, 0.3);
+                    border-radius: var(--radius-md);
+                    padding: 12px 16px;
+                    margin-bottom: 14px;
+                    font-size: 0.875rem;
+                    color: #fca5a5;
                   ">
-                Rohan Gupta · You
+                ⚠️ <strong>Camera/Mic access denied.</strong> Please allow camera
+                & microphone permissions in your browser address bar and refresh
+                the page to show your video.
               </div>
-              <div class="video-muted" id="you-muted" style="display: none; z-index: 5">
-                🔇 Muted
+
+              <!-- Video Grid — real camera on right tile -->
+              <div class="video-grid mb-16" id="call-video-grid">
+                <!-- Candidate tile (simulated) -->
+                <div class="video-tile active-speaker" id="candidate-tile">
+                  <div class="video-avatar">A</div>
+                  <div class="video-name" id="video-candidate-name">Candidate · Candidate</div>
+                  <div style="
+                        position: absolute;
+                        top: 10px;
+                        left: 12px;
+                        padding: 3px 8px;
+                        background: rgba(16, 185, 129, 0.7);
+                        border-radius: var(--radius-full);
+                        font-size: 0.7rem;
+                        backdrop-filter: blur(6px);
+                      ">
+                    ● Speaking
+                  </div>
+                </div>
+                <!-- Self tile: real camera feed -->
+                <div class="video-tile" id="self-tile" style="position: relative; overflow: hidden">
+                  <!-- Fallback avatar — shown when camera is off or denied -->
+                  <div id="self-avatar-fallback" style="
+                        position: absolute;
+                        inset: 0;
+                        z-index: 2;
+                        background: linear-gradient(135deg, #f59e0b, #ef4444);
+                        display: flex;
+                        align-items: center;
+                        justify-content: center;
+                        font-size: 2.2rem;
+                        font-weight: 700;
+                        color: #fff;
+                        border-radius: inherit;
+                      ">
+                    R
+                  </div>
+                  <!-- Real camera video element — hidden until getUserMedia succeeds -->
+                  <video id="self-video" autoplay muted playsinline style="
+                        position: absolute;
+                        inset: 0;
+                        width: 100%;
+                        height: 100%;
+                        object-fit: cover;
+                        border-radius: inherit;
+                        transform: scaleX(-1);
+                        display: none;
+                        z-index: 3;
+                        background: #e2e8f0;
+                      "></video>
+                  <div class="video-name" style="
+                        position: absolute;
+                        bottom: 12px;
+                        left: 12px;
+                        z-index: 5;
+                      ">
+                    Rohan Gupta · You
+                  </div>
+                  <div class="video-muted" id="you-muted" style="display: none; z-index: 5">
+                    🔇 Muted
+                  </div>
+                </div>
+              </div>
+
+              <!-- PHASE 2: CODING SANDBOX (HIDDEN BY DEFAULT) -->
+              <div class="sandbox-container" id="coding-sandbox">
+                <div class="sandbox-header">
+                  <div class="flex items-center gap-12">
+                    <span class="sandbox-mode-badge">COLLABORATIVE MODE</span>
+                    <select class="lang-select" id="sandbox-lang">
+                      <option value="javascript">JavaScript</option>
+                      <option value="python">Python</option>
+                      <option value="java">Java</option>
+                      <option value="cpp">C++</option>
+                    </select>
+                  </div>
+                  <div class="sandbox-controls" style="display:flex; gap:8px;">
+                    <button class="run-btn" onclick="runSandboxCode()">
+                      <span>▶</span> Run Code
+                    </button>
+                    <button onclick="clearSandbox()" style="background:rgba(255,255,255,0.08); border:1px solid rgba(255,255,255,0.15); color:#8b949e; padding:6px 14px; border-radius:6px; font-size:0.8rem; cursor:pointer;">
+                      🗑 Clear
+                    </button>
+                  </div>
+                </div>
+                <div class="sandbox-editor-wrapper">
+                  <div class="editor-line-numbers" id="line-numbers">
+                    1<br>2<br>3<br>4<br>5<br>6<br>7<br>8<br>9<br>10
+                  </div>
+                  <textarea class="code-editor" id="sandbox-editor" spellcheck="false" placeholder="// Write your code here...">function solveProblem(input) {
+  // Candidate will see this in real-time
+  console.log("Hello from InternPath Sandbox!");
+  return true;
+}</textarea>
+                </div>
+                <div class="sandbox-terminal">
+                  <div class="terminal-header">
+                    <span>Output Terminal</span>
+                    <span>Ready</span>
+                  </div>
+                  <div id="terminal-output">
+                    > Initializing sandbox...<br>
+                    > Environment ready.
+                  </div>
+                </div>
+              </div>
+
+              <!-- Controls -->
+              <div class="call-controls-bar mb-16">
+                <button class="call-btn-bar neutral" id="mic-btn" onclick="toggleMic()" title="Mute/Unmute">
+                  🎙️
+                </button>
+                <button class="call-btn-bar neutral" id="cam-btn" onclick="toggleCam()" title="Camera On/Off">
+                  📷
+                </button>
+                <button class="call-btn-bar neutral" onclick="toggleScreenShare()" title="Share Screen">
+                  🖥️
+                </button>
+                <button class="call-btn-bar neutral" onclick="toggleChat()" title="Chat">
+                  💬
+                </button>
+                <button class="call-btn-bar neutral" onclick="toggleParticipants()" title="Participants">
+                  👥
+                </button>
+                <button class="call-btn-bar end" onclick="endCall()" title="End Call">
+                  📵
+                </button>
+              </div>
+
+              <!-- Notes Panel -->
+              <div class="glass-card" style="padding: 20px" id="notes-section">
+                <h4 style="
+                      font-size: 0.875rem;
+                      margin-bottom: 12px;
+                      color: var(--text-secondary);
+                      text-transform: uppercase;
+                      letter-spacing: 0.08em;
+                    ">
+                  📝 Interview Notes
+                </h4>
+                <textarea class="form-textarea" id="interview-notes" rows="5"
+                  placeholder="Take notes during the interview...&#10;• Technical skills assessment&#10;• Communication skills&#10;• Problem-solving approach&#10;• Cultural fit"></textarea>
+                <div style="
+                      display: flex;
+                      gap: 10px;
+                      margin-top: 12px;
+                      flex-wrap: wrap;
+                    ">
+                  <button class="btn btn-primary btn-sm" onclick="saveNotes()">
+                    Save Notes
+                  </button>
+                  <button class="btn btn-success btn-sm" style="
+                        background: rgba(16, 185, 129, 0.2);
+                        border: 1px solid rgba(16, 185, 129, 0.4);
+                        color: #34d399;
+                        padding: 8px 18px;
+                        border-radius: var(--radius-full);
+                        font-weight: 600;
+                        cursor: pointer;
+                        transition: var(--transition);
+                        font-size: 0.85rem;
+                      " onclick="sendOffer()">
+                    ✅ Send Offer
+                  </button>
+                  <button class="btn btn-outline btn-sm" style="color: #f87171; border-color: rgba(239, 68, 68, 0.3)"
+                    onclick="rejectCandidate()">
+                    Reject
+                  </button>
+                </div>
               </div>
             </div>
-          </div>
 
-          <!-- Controls -->
-          <div class="call-controls-bar mb-16">
-            <button class="call-btn-bar neutral" id="mic-btn" onclick="toggleMic()" title="Mute/Unmute">
-              🎙️
-            </button>
-            <button class="call-btn-bar neutral" id="cam-btn" onclick="toggleCam()" title="Camera On/Off">
-              📷
-            </button>
-            <button class="call-btn-bar neutral" onclick="
-                  showToast(
-                    '🖥️',
-                    'Screen Share',
-                    'Screen sharing is starting...',
-                  )
-                " title="Share Screen">
-              🖥️
-            </button>
-            <button class="call-btn-bar neutral" onclick="showToast('💬', 'Chat', 'Group chat opened!')" title="Chat">
-              💬
-            </button>
-            <button class="call-btn-bar neutral" onclick="
-                  showToast(
-                    '👥',
-                    'Participants',
-                    '2 participants in this call.',
-                  )
-                " title="Participants">
-              👥
-            </button>
-            <button class="call-btn-bar end" onclick="endCall()" title="End Call">
-              📵
-            </button>
-          </div>
+            <!-- AI CO-PILOT SIDEBAR -->
+            <aside class="copilot-sidebar" id="copilot-sidebar">
+              <div class="copilot-header">
+                <span style="font-size: 1.2rem">✨</span>
+                <h3>AI Interview Co-pilot</h3>
+              </div>
+              <div class="copilot-body">
+                <!-- Smart Questions -->
+                <div>
+                  <div class="copilot-section-title">
+                    Smart Questions
+                    <span class="badge badge-primary" style="font-size: 0.6rem; padding: 2px 8px;">AI GENERATED</span>
+                  </div>
+                  <div id="ai-questions-list">
+                    <div class="smart-question-card" onclick="useQuestion(this)">
+                      <p>"How do you handle state persistence across browser sessions in a React app?"</p>
+                    </div>
+                    <div class="smart-question-card" onclick="useQuestion(this)">
+                      <p>"Explain the difference between SQL and NoSQL for a high-concurrency payment system."</p>
+                    </div>
+                    <div class="smart-question-card" onclick="useQuestion(this)">
+                      <p>"Can you describe a situation where you had to refactor legacy code for better performance?"</p>
+                    </div>
+                  </div>
+                </div>
 
-          <!-- Notes Panel -->
-          <div class="glass-card" style="padding: 20px" id="notes-section">
-            <h4 style="
-                  font-size: 0.875rem;
-                  margin-bottom: 12px;
-                  color: var(--text-secondary);
-                  text-transform: uppercase;
-                  letter-spacing: 0.08em;
-                ">
-              📝 Interview Notes
-            </h4>
-            <textarea class="form-textarea" id="interview-notes" rows="5"
-              placeholder="Take notes during the interview...&#10;• Technical skills assessment&#10;• Communication skills&#10;• Problem-solving approach&#10;• Cultural fit"></textarea>
-            <div style="
-                  display: flex;
-                  gap: 10px;
-                  margin-top: 12px;
-                  flex-wrap: wrap;
-                ">
-              <button class="btn btn-primary btn-sm" onclick="saveNotes()">
-                Save Notes
-              </button>
-              <button class="btn btn-success btn-sm" style="
-                    background: rgba(16, 185, 129, 0.2);
-                    border: 1px solid rgba(16, 185, 129, 0.4);
-                    color: #34d399;
-                    padding: 8px 18px;
-                    border-radius: var(--radius-full);
-                    font-weight: 600;
-                    cursor: pointer;
-                    transition: var(--transition);
-                    font-size: 0.85rem;
-                  " onclick="sendOffer()">
-                ✅ Send Offer
-              </button>
-              <button class="btn btn-outline btn-sm" style="color: #f87171; border-color: rgba(239, 68, 68, 0.3)"
-                onclick="rejectCandidate()">
-                Reject
-              </button>
-            </div>
+                <!-- Sentiment Tracker -->
+                <div class="sentiment-meter-container">
+                  <div class="copilot-section-title">
+                    Candidate Engagement
+                    <span id="sentiment-val" style="color: #10b981; font-weight: 800;">78%</span>
+                  </div>
+                  <div class="sentiment-meter">
+                    <div class="sentiment-fill" id="sentiment-fill" style="background: linear-gradient(90deg, #6366f1, #10b981); width: 78%;"></div>
+                  </div>
+                  <div style="font-size: 0.65rem; color: var(--text-muted); margin-top: 8px;">
+                    AI Analysis: High confidence & clear communication.
+                  </div>
+                </div>
+
+                <!-- Skill Checklist -->
+                <div>
+                  <div class="copilot-section-title">Technical Assessment</div>
+                  <div id="ai-skill-checklist">
+                    <div class="skill-check-item">
+                      <input type="checkbox" id="skill-1"> <label for="skill-1" style="font-size: 0.85rem; color: #cbd5e1;">React / Frontend Core</label>
+                    </div>
+                    <div class="skill-check-item">
+                      <input type="checkbox" id="skill-2"> <label for="skill-2" style="font-size: 0.85rem; color: #cbd5e1;">System Architecture</label>
+                    </div>
+                    <div class="skill-check-item">
+                      <input type="checkbox" id="skill-3"> <label for="skill-3" style="font-size: 0.85rem; color: #cbd5e1;">Database Optimization</label>
+                    </div>
+                    <div class="skill-check-item">
+                      <input type="checkbox" id="skill-4"> <label for="skill-4" style="font-size: 0.85rem; color: #cbd5e1;">Problem Solving Logic</label>
+                    </div>
+                  </div>
+                </div>
+
+                <!-- Live Transcription -->
+                <div>
+                  <div class="copilot-section-title">Real-time Transcription</div>
+                  <div class="live-transcript" id="live-transcript">
+                    <div class="transcript-line">
+                      <span class="speaker speaker-ai">System:</span> AI monitoring active. Analyzing conversation...
+                    </div>
+                  </div>
+                </div>
+              </div>
+            </aside>
           </div>
         </div>
       </div>
@@ -4966,6 +5524,10 @@
         const s = String(callSeconds % 60).padStart(2, "0");
         const el = document.getElementById("call-timer-display");
         if (el) el.textContent = `${m}:${s}`;
+        
+        // Phase 1: Simulate AI features
+        if (callSeconds % 6 === 0) simulateTranscription();
+        if (callSeconds % 4 === 0) simulateSentiment();
       }, 1000);
 
       try {
@@ -5046,6 +5608,8 @@
           if (screenVideo) screenVideo.srcObject = null;
         }
       });
+
+      setupSandboxListeners();
     }
 
     function createPeerConnection(peerId, isInitiator) {
@@ -5116,6 +5680,262 @@
       document.getElementById("call-timer-display").textContent = "00:00";
 
       showToast("📵", "Call Ended", "Saving session notes...");
+    }
+
+    // ============================================
+    // PHASE 1: AI CO-PILOT LOGIC
+    // ============================================
+    let copilotActive = true;
+
+    function toggleCopilot() {
+      const layout = document.getElementById("interview-layout");
+      const sidebar = document.getElementById("copilot-sidebar");
+      const btn = document.getElementById("copilot-toggle-btn");
+      
+      copilotActive = !copilotActive;
+      
+      if (copilotActive) {
+        layout.style.gridTemplateColumns = "1fr 340px";
+        sidebar.style.display = "flex";
+        btn.classList.add("active");
+        btn.style.background = "var(--primary)";
+        btn.style.color = "#fff";
+      } else {
+        layout.style.gridTemplateColumns = "1fr 0";
+        sidebar.style.display = "none";
+        btn.classList.remove("active");
+        btn.style.background = "transparent";
+        btn.style.color = "var(--text-secondary)";
+      }
+    }
+
+    function useQuestion(el) {
+      const question = el.querySelector("p").textContent;
+      const notesArea = document.getElementById("interview-notes");
+      const timestamp = new Date().toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' });
+      
+      notesArea.value += `\n[${timestamp}] Asked: ${question}\n`;
+      showToast("✨", "Question Added", "The AI question was added to your notes.");
+      el.style.opacity = "0.5";
+      el.style.pointerEvents = "none";
+    }
+
+    function simulateTranscription() {
+      const transcriptEl = document.getElementById("live-transcript");
+      if (!transcriptEl) return;
+
+      const lines = [
+        { speaker: "Candidate", cls: "speaker-candidate", text: "I primarily use React hooks like useEffect for lifecycle management." },
+        { speaker: "AI Insight", cls: "speaker-ai", text: "Candidate demonstrates proficiency in modern React hooks and lifecycle." },
+        { speaker: "Candidate", cls: "speaker-candidate", text: "At my previous internship, I optimized the backend response time by 40%." },
+        { speaker: "AI Insight", cls: "speaker-ai", text: "Significant impact metric identified. Suggest following up on specific DB tools." },
+        { speaker: "Candidate", cls: "speaker-candidate", text: "I'm looking for a role where I can contribute to high-scale systems." },
+        { speaker: "AI Insight", cls: "speaker-ai", text: "Culture Fit: High alignment with innovative and scalable growth mindset." },
+        { speaker: "Interviewer", cls: "speaker-interviewer", text: "That sounds great. How would you handle state persistence?" }
+      ];
+
+      const line = lines[Math.floor(Math.random() * lines.length)];
+      const div = document.createElement("div");
+      div.className = "transcript-line";
+      div.innerHTML = `<span class="speaker ${line.cls}">${line.speaker}:</span> ${line.text}`;
+      
+      transcriptEl.appendChild(div);
+      transcriptEl.scrollTop = transcriptEl.scrollHeight;
+    }
+
+    function simulateSentiment() {
+      const fill = document.getElementById("sentiment-fill");
+      const val = document.getElementById("sentiment-val");
+      if (!fill || !val) return;
+
+      const randomVal = Math.floor(Math.random() * 25) + 65; // 65-90%
+      fill.style.width = randomVal + "%";
+      val.textContent = randomVal + "%";
+      
+      if (randomVal > 80) val.style.color = "var(--success)";
+      else if (randomVal > 70) val.style.color = "var(--warning)";
+      else val.style.color = "var(--danger)";
+    }
+
+    function toggleScreenShare() {
+      showToast('🖥️', 'Screen Share', 'Screen sharing is starting...');
+      toggleScreenShareInterviewer();
+    }
+
+    function toggleChat() {
+      showToast('💬', 'Chat', 'Group chat opened!');
+    }
+
+    function toggleParticipants() {
+      showToast('👥', 'Participants', '2 participants in this call.');
+    }
+
+    // ============================================
+    // PHASE 2: CODING SANDBOX LOGIC
+    // ============================================
+    let sandboxActive = false;
+
+    function toggleSandbox() {
+      const videoGrid = document.getElementById("call-video-grid");
+      const sandbox = document.getElementById("coding-sandbox");
+      const btn = document.getElementById("sandbox-toggle-btn");
+
+      sandboxActive = !sandboxActive;
+
+      if (sandboxActive) {
+        videoGrid.style.display = "none";
+        sandbox.classList.add("active");
+        btn.style.background = "var(--primary)";
+        btn.style.color = "#fff";
+        btn.textContent = "📹 Video Mode";
+        showToast("💻", "Coding Mode Active", "Candidate's screen switched to code editor.");
+        if (socket) socket.emit("sandbox-toggle", { roomId: currentInterviewAppId || "mock-room-interviewer", active: true });
+      } else {
+        videoGrid.style.display = "grid";
+        sandbox.classList.remove("active");
+        btn.style.background = "transparent";
+        btn.style.color = "var(--text-secondary)";
+        btn.textContent = "💻 Coding Sandbox";
+        showToast("📹", "Video Mode", "Switched back to video interview.");
+        if (socket) socket.emit("sandbox-toggle", { roomId: currentInterviewAppId || "mock-room-interviewer", active: false });
+      }
+    }
+
+    function appendTerminalLine(outputEl, text, color) {
+      const span = document.createElement("div");
+      span.style.color = color || "#7ee787";
+      span.textContent = text;
+      outputEl.appendChild(span);
+      outputEl.scrollTop = outputEl.scrollHeight;
+    }
+
+    function runSandboxCode() {
+      const outputEl = document.getElementById("terminal-output");
+      const lang = document.getElementById("sandbox-lang").value;
+      const code = document.getElementById("sandbox-editor").value.trim();
+      const runBtn = document.querySelector(".run-btn");
+
+      if (!outputEl || !code) return;
+
+      // Visual feedback
+      runBtn.disabled = true;
+      runBtn.textContent = "⏳ Running...";
+      outputEl.innerHTML = "";
+      appendTerminalLine(outputEl, `> Running ${lang} code...`, "#6366f1");
+
+      setTimeout(() => {
+        runBtn.disabled = false;
+        runBtn.innerHTML = "<span>▶</span> Run Code";
+
+        if (lang === "javascript") {
+          // Actually execute JS and capture output
+          const logs = [];
+          const errors = [];
+          const fakeConsole = {
+            log: (...args) => logs.push(args.map(a => (typeof a === "object" ? JSON.stringify(a, null, 2) : String(a))).join(" ")),
+            error: (...args) => errors.push(args.map(a => String(a)).join(" ")),
+            warn: (...args) => logs.push("⚠ " + args.map(a => String(a)).join(" ")),
+            info: (...args) => logs.push(args.map(a => String(a)).join(" ")),
+          };
+          try {
+            const fn = new Function("console", code);
+            fn(fakeConsole);
+            if (logs.length === 0 && errors.length === 0) {
+              appendTerminalLine(outputEl, "(No output. Add console.log() to see results.)", "#8b949e");
+            }
+            logs.forEach(l => appendTerminalLine(outputEl, l, "#7ee787"));
+            errors.forEach(e => appendTerminalLine(outputEl, "Error: " + e, "#f87171"));
+            appendTerminalLine(outputEl, "\nProcess finished with exit code 0.", "#7ee787");
+          } catch (err) {
+            appendTerminalLine(outputEl, "❌ Runtime Error:", "#f87171");
+            appendTerminalLine(outputEl, err.message, "#fca5a5");
+            appendTerminalLine(outputEl, "\nProcess finished with exit code 1.", "#f87171");
+          }
+        } else {
+          // For Python/Java/C++ simulate execution (no backend)
+          appendTerminalLine(outputEl, `[${lang.toUpperCase()} mode — simulated execution]`, "#8b949e");
+          const hasOutput = /print|cout|System\.out|printf/.test(code);
+          if (hasOutput) {
+            const match = code.match(/print\(["'](.+?)["']\)|cout\s*<<\s*["'](.+?)["']|System\.out\.println\(["'](.+?)["']\)/);
+            if (match) {
+              appendTerminalLine(outputEl, match[1] || match[2] || match[3] || "Hello World!", "#7ee787");
+            } else {
+              appendTerminalLine(outputEl, "Hello World!", "#7ee787");
+            }
+          } else {
+            appendTerminalLine(outputEl, "(No output detected. Add a print/cout statement.)", "#8b949e");
+          }
+          appendTerminalLine(outputEl, "\nProcess finished with exit code 0.", "#7ee787");
+        }
+
+        // Sync output to student's terminal
+        if (socket) {
+          socket.emit("terminal-sync", {
+            roomId: currentInterviewAppId || "mock-room-interviewer",
+            output: outputEl.innerHTML
+          });
+        }
+      }, 600);
+    }
+
+    function clearSandbox() {
+      const editor = document.getElementById("sandbox-editor");
+      const output = document.getElementById("terminal-output");
+      if (editor) editor.value = "";
+      if (output) { output.innerHTML = ""; appendTerminalLine(output, "> Terminal cleared.", "#8b949e"); }
+      updateLineNumbers();
+    }
+
+    function updateLineNumbers() {
+      const editor = document.getElementById("sandbox-editor");
+      const lineNums = document.getElementById("line-numbers");
+      if (!editor || !lineNums) return;
+      const lines = editor.value.split("\n").length;
+      let html = "";
+      for (let i = 1; i <= Math.max(lines, 10); i++) html += i + "<br>";
+      lineNums.innerHTML = html;
+    }
+
+    // Always attach editor listeners on page load (no socket dependency)
+    document.addEventListener("DOMContentLoaded", () => {
+      const editor = document.getElementById("sandbox-editor");
+      if (editor) {
+        editor.addEventListener("input", () => {
+          updateLineNumbers();
+          if (socket) {
+            socket.emit("code-sync", {
+              roomId: currentInterviewAppId || "mock-room-interviewer",
+              code: editor.value
+            });
+          }
+        });
+        editor.addEventListener("keydown", (e) => {
+          if (e.key === "Tab") {
+            e.preventDefault();
+            const start = editor.selectionStart;
+            const end = editor.selectionEnd;
+            editor.value = editor.value.substring(0, start) + "  " + editor.value.substring(end);
+            editor.selectionStart = editor.selectionEnd = start + 2;
+            updateLineNumbers();
+          }
+        });
+        updateLineNumbers();
+      }
+    });
+
+    function setupSandboxListeners() {
+      if (!socket) return;
+      const editor = document.getElementById("sandbox-editor");
+      socket.on("code-sync", (data) => {
+        if (editor && editor.value !== data.code) {
+          editor.value = data.code;
+          updateLineNumbers();
+        }
+      });
+      socket.on("terminal-sync", (data) => {
+        const output = document.getElementById("terminal-output");
+        if (output) { output.innerHTML = data.output; output.scrollTop = output.scrollHeight; }
+      });
     }
 
     function toggleMic() {

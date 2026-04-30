@@ -1314,6 +1314,104 @@
         background: #34d399; animation: pulse-dot 1.5s infinite;
       }
 
+      /* ======== PHASE 2: CODING SANDBOX ======== */
+      .sandbox-container {
+        display: none;
+        flex-direction: column;
+        background: #0d1117;
+        border-radius: var(--radius-lg);
+        border: 1px solid rgba(255, 255, 255, 0.1);
+        height: 550px;
+        overflow: hidden;
+        margin-bottom: 20px;
+        box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.5);
+      }
+
+      .sandbox-container.active {
+        display: flex;
+      }
+
+      .sandbox-header {
+        background: #161b22;
+        padding: 10px 16px;
+        border-bottom: 1px solid rgba(255, 255, 255, 0.08);
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+      }
+
+      .lang-select {
+        background: rgba(255, 255, 255, 0.05);
+        border: 1px solid rgba(255, 255, 255, 0.1);
+        color: #fff;
+        padding: 4px 10px;
+        border-radius: 6px;
+        font-size: 0.75rem;
+        outline: none;
+      }
+
+      .sandbox-editor-wrapper {
+        flex: 1;
+        display: flex;
+        position: relative;
+      }
+
+      .editor-line-numbers {
+        width: 40px;
+        background: #0d1117;
+        border-right: 1px solid rgba(255, 255, 255, 0.05);
+        padding: 12px 0;
+        color: #484f58;
+        font-family: 'DM Mono', monospace;
+        font-size: 12px;
+        text-align: center;
+        user-select: none;
+      }
+
+      .code-editor {
+        flex: 1;
+        background: transparent;
+        border: none;
+        color: #e6edf3;
+        font-family: 'DM Mono', 'Fira Code', monospace;
+        font-size: 13.5px;
+        padding: 12px;
+        resize: none;
+        outline: none;
+        line-height: 1.6;
+        white-space: pre;
+        overflow-wrap: normal;
+        overflow-x: auto;
+      }
+
+      .sandbox-terminal {
+        height: 120px;
+        background: #010409;
+        border-top: 1px solid rgba(255, 255, 255, 0.1);
+        padding: 12px;
+        font-family: 'DM Mono', monospace;
+        font-size: 12px;
+        color: #7ee787;
+        overflow-y: auto;
+      }
+
+      .terminal-header {
+        font-size: 0.65rem;
+        text-transform: uppercase;
+        color: #8b949e;
+        margin-bottom: 6px;
+      }
+
+      .sandbox-mode-badge {
+        padding: 3px 8px;
+        border-radius: 4px;
+        font-size: 0.65rem;
+        font-weight: 700;
+        background: rgba(16, 185, 129, 0.15);
+        color: #34d399;
+        border: 1px solid rgba(16, 185, 129, 0.3);
+      }
+
       /* ======== TABS ======== */
       .tabs {
         display: flex;
@@ -3586,6 +3684,9 @@
                 <span id="student-call-timer"
                   style="font-family: 'Outfit'; font-size: 1.1rem; font-weight: 700; color: var(--text-primary); letter-spacing: 0.1em"
                 >00:00</span>
+                <button id="student-sandbox-toggle-btn" onclick="toggleStudentSandbox()" class="btn btn-outline btn-sm" style="font-size:0.75rem; padding:5px 14px;">
+                  💻 Coding Mode
+                </button>
               </div>
             </div>
 
@@ -3598,7 +3699,7 @@
             </div>
 
             <!-- Video Grid -->
-            <div class="student-video-grid">
+            <div class="student-video-grid" id="student-call-video-grid">
               <!-- Interviewer tile (remote video) -->
               <div class="student-video-tile active-speaker" id="student-remote-tile">
                 <div class="student-video-avatar" id="student-remote-avatar">I</div>
@@ -3628,6 +3729,40 @@
                          font-size:0.7rem; color:#fff; backdrop-filter:blur(6px);">
                   🔇 Muted
                 </div>
+              </div>
+            </div>
+
+            <!-- PHASE 2: CODING SANDBOX -->
+            <div class="sandbox-container" id="student-coding-sandbox">
+              <div class="sandbox-header">
+                <div class="flex items-center gap-12">
+                  <span class="sandbox-mode-badge">LIVE EDITOR</span>
+                  <select class="lang-select" id="student-sandbox-lang">
+                    <option value="javascript">JavaScript</option>
+                    <option value="python">Python</option>
+                    <option value="java">Java</option>
+                    <option value="cpp">C++</option>
+                  </select>
+                </div>
+                <div style="display:flex; gap:8px; align-items:center;">
+                  <button onclick="runStudentCode()" style="background:#10b981; border:none; color:#fff; padding:6px 16px; border-radius:6px; font-size:0.8rem; font-weight:700; cursor:pointer; display:flex; align-items:center; gap:6px;" id="student-run-btn">
+                    <span>▶</span> Run Code
+                  </button>
+                  <button onclick="clearStudentSandbox()" style="background:rgba(255,255,255,0.08); border:1px solid rgba(255,255,255,0.15); color:#8b949e; padding:6px 12px; border-radius:6px; font-size:0.8rem; cursor:pointer;">
+                    🗑 Clear
+                  </button>
+                </div>
+              </div>
+              <div class="sandbox-editor-wrapper">
+                <div class="editor-line-numbers" id="student-line-numbers">
+                  1<br>2<br>3<br>4<br>5<br>6<br>7<br>8<br>9<br>10
+                </div>
+                <textarea class="code-editor" id="student-sandbox-editor" spellcheck="false" placeholder="// Write your solution here...
+// Example: console.log('Hello World!');"></textarea>
+              </div>
+              <div class="sandbox-terminal">
+                <div class="terminal-header">Output Terminal</div>
+                <div id="student-terminal-output" style="min-height:60px;">> Ready. Press Run Code to execute.</div>
               </div>
             </div>
 
@@ -7023,6 +7158,8 @@
             if (videoTile) videoTile.style.borderColor = "transparent";
           }
         });
+
+        setupStudentSandboxListeners();
       }
 
       function createStudentPeerConnection(peerId, isInitiator) {
@@ -7150,6 +7287,176 @@
           }
         }
       }
+
+      // ============================================
+      // PHASE 2: CODING SANDBOX LOGIC (Student)
+      // ============================================
+      let studentSandboxActive = false;
+
+      function toggleStudentSandbox() {
+        const videoGrid = document.getElementById("student-call-video-grid");
+        const sandbox = document.getElementById("student-coding-sandbox");
+        const btn = document.getElementById("student-sandbox-toggle-btn");
+        studentSandboxActive = !studentSandboxActive;
+        if (studentSandboxActive) {
+          if (videoGrid) videoGrid.style.display = "none";
+          if (sandbox) sandbox.classList.add("active");
+          if (btn) { btn.textContent = "📹 Video Mode"; btn.style.background = "var(--primary)"; btn.style.color = "#fff"; }
+          showToast("💻", "Coding Mode", "Code editor opened.");
+        } else {
+          if (videoGrid) videoGrid.style.display = "grid";
+          if (sandbox) sandbox.classList.remove("active");
+          if (btn) { btn.textContent = "💻 Coding Mode"; btn.style.background = ""; btn.style.color = ""; }
+          showToast("📹", "Video Mode", "Back to video interview.");
+        }
+      }
+
+      function updateStudentLineNumbers() {
+        const editor = document.getElementById("student-sandbox-editor");
+        const lineNums = document.getElementById("student-line-numbers");
+        if (!editor || !lineNums) return;
+        const lines = editor.value.split("\n").length;
+        let html = "";
+        for (let i = 1; i <= Math.max(lines, 10); i++) html += i + "<br>";
+        lineNums.innerHTML = html;
+      }
+
+      function appendStudentTerminal(text, color) {
+        const t = document.getElementById("student-terminal-output");
+        if (!t) return;
+        const div = document.createElement("div");
+        div.style.color = color || "#7ee787";
+        div.textContent = text;
+        t.appendChild(div);
+        t.scrollTop = t.scrollHeight;
+      }
+
+      function runStudentCode() {
+        const outputEl = document.getElementById("student-terminal-output");
+        const lang = document.getElementById("student-sandbox-lang").value;
+        const code = document.getElementById("student-sandbox-editor").value.trim();
+        const btn = document.getElementById("student-run-btn");
+        if (!outputEl || !code) return;
+
+        btn.disabled = true;
+        btn.textContent = "⏳ Running...";
+        outputEl.innerHTML = "";
+        appendStudentTerminal(`> Running ${lang} code...`, "#6366f1");
+
+        setTimeout(() => {
+          btn.disabled = false;
+          btn.innerHTML = "<span>▶</span> Run Code";
+
+          if (lang === "javascript") {
+            const logs = [];
+            const errors = [];
+            const fakeConsole = {
+              log: (...args) => logs.push(args.map(a => typeof a === "object" ? JSON.stringify(a, null, 2) : String(a)).join(" ")),
+              error: (...args) => errors.push(args.map(a => String(a)).join(" ")),
+              warn: (...args) => logs.push("⚠ " + args.map(a => String(a)).join(" ")),
+              info: (...args) => logs.push(args.map(a => String(a)).join(" ")),
+            };
+            try {
+              const fn = new Function("console", code);
+              fn(fakeConsole);
+              if (logs.length === 0 && errors.length === 0) {
+                appendStudentTerminal("(No output. Add console.log() to see results.)", "#8b949e");
+              }
+              logs.forEach(l => appendStudentTerminal(l, "#7ee787"));
+              errors.forEach(e => appendStudentTerminal("Error: " + e, "#f87171"));
+              appendStudentTerminal("\nProcess finished with exit code 0.", "#7ee787");
+            } catch (err) {
+              appendStudentTerminal("❌ Runtime Error:", "#f87171");
+              appendStudentTerminal(err.message, "#fca5a5");
+              appendStudentTerminal("\nProcess finished with exit code 1.", "#f87171");
+            }
+          } else {
+            appendStudentTerminal(`[${lang.toUpperCase()} — simulated]`, "#8b949e");
+            const hasOutput = /print|cout|System\.out|printf/.test(code);
+            if (hasOutput) {
+              const m = code.match(/print\(["'](.+?)["']\)|cout\s*<<\s*["'](.+?)["']|System\.out\.println\(["'](.+?)["']\)/);
+              appendStudentTerminal(m ? (m[1] || m[2] || m[3]) : "Hello World!", "#7ee787");
+            } else {
+              appendStudentTerminal("(No output detected.)", "#8b949e");
+            }
+            appendStudentTerminal("\nProcess finished with exit code 0.", "#7ee787");
+          }
+
+          // Sync to interviewer
+          if (socket) {
+            socket.emit("terminal-sync", {
+              roomId: currentInterviewRoomId || "mock-room-interviewer",
+              output: outputEl.innerHTML
+            });
+          }
+        }, 600);
+      }
+
+      function clearStudentSandbox() {
+        const editor = document.getElementById("student-sandbox-editor");
+        const output = document.getElementById("student-terminal-output");
+        if (editor) editor.value = "";
+        if (output) { output.innerHTML = ""; appendStudentTerminal("> Terminal cleared.", "#8b949e"); }
+        updateStudentLineNumbers();
+      }
+
+      // Always set up editor on page load — no socket needed
+      document.addEventListener("DOMContentLoaded", () => {
+        const editor = document.getElementById("student-sandbox-editor");
+        if (editor) {
+          editor.addEventListener("input", () => {
+            updateStudentLineNumbers();
+            if (socket) {
+              socket.emit("code-sync", {
+                roomId: currentInterviewRoomId || "mock-room-interviewer",
+                code: editor.value
+              });
+            }
+          });
+          editor.addEventListener("keydown", (e) => {
+            if (e.key === "Tab") {
+              e.preventDefault();
+              const s = editor.selectionStart, end = editor.selectionEnd;
+              editor.value = editor.value.substring(0, s) + "  " + editor.value.substring(end);
+              editor.selectionStart = editor.selectionEnd = s + 2;
+              updateStudentLineNumbers();
+            }
+          });
+          updateStudentLineNumbers();
+        }
+      });
+
+      function setupStudentSandboxListeners() {
+        if (!socket) return;
+        const editor = document.getElementById("student-sandbox-editor");
+
+        socket.on("code-sync", (data) => {
+          if (editor && editor.value !== data.code) {
+            editor.value = data.code;
+            updateStudentLineNumbers();
+          }
+        });
+
+        socket.on("sandbox-toggle", (data) => {
+          const videoGrid = document.getElementById("student-call-video-grid");
+          const sandbox = document.getElementById("student-coding-sandbox");
+          if (data.active) {
+            if (videoGrid) videoGrid.style.display = "none";
+            if (sandbox) sandbox.classList.add("active");
+            showToast("💻", "Coding Mode", "Interviewer started technical assessment.");
+          } else {
+            if (videoGrid) videoGrid.style.display = "grid";
+            if (sandbox) sandbox.classList.remove("active");
+            showToast("📹", "Video Mode", "Back to video interview.");
+          }
+        });
+
+        socket.on("terminal-sync", (data) => {
+          const terminal = document.getElementById("student-terminal-output");
+          if (terminal) { terminal.innerHTML = data.output; terminal.scrollTop = terminal.scrollHeight; }
+        });
+      }
+
 
       function endStudentCall() {
         if (!studentCallActive) return;
